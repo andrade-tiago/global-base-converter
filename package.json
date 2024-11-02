@@ -1,0 +1,20 @@
+{
+  "name": "@andrade-tiago/base-converter",
+  "version": "1.0.0",
+  "description": "Convert a number from any base to any base (arbitraries)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "number",
+    "base",
+    "radix",
+    "converter"
+  ],
+  "author": "Tiago Andrade",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
