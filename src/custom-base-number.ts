@@ -1,3 +1,4 @@
+import BaseConverter from './base-converter';
 import CustomBase from './custom-base';
 import { decimalBase } from './defaults';
 
@@ -9,6 +10,7 @@ import { decimalBase } from './defaults';
 class CustomBaseNumber {
   public readonly customBase: CustomBase;
   private readonly value: number;
+  private encodedValue?: string;
 
   /**
    * Initializes a new instance of the CustomBaseNumber class.
@@ -21,48 +23,22 @@ class CustomBaseNumber {
    *
    * @throws {RangeError} if a number is negative or non-integer.
    * @throws {SyntaxError} if customBase is missing for string input.
-   * @throws {Error} if the custom base string contains symbols not defined in customBase.
+   * @throws {TypeError} if the custom base string contains symbols not defined in customBase.
    */
   constructor(value: string | number, customBase?: CustomBase) {
     if (typeof value === 'number') {
-      if (value < 0 || !Number.isInteger(value)) {
-        throw new RangeError('Value must be a non-negative integer.');
-      }
-      this.customBase = customBase || decimalBase;
+      customBase ||= decimalBase;
+
+      this.customBase = customBase;
       this.value = value;
     } else {
       if (!customBase) {
         throw new SyntaxError('A CustomBase instance is required for string input.');
       }
       this.customBase = customBase;
-      this.value = this.decode(value);
+      this.value = BaseConverter.decode(value, customBase);
+      this.encodedValue = value;
     }
-  }
-
-  /**
-   * Decodes a custom base string to its decimal value.
-   *
-   * @param {string} customBaseStr - String representing the number in the custom base.
-   * @returns {number} The decimal (base 10) equivalent of the custom base number.
-   *
-   * @throws {TypeError} if the string contains symbols not present in the custom base.
-   */
-  private decode(customBaseStr: string): number {
-    let result = 0;
-    const length = customBaseStr.length;
-
-    for (let i = 0; i < length; i++) {
-      const symbol = customBaseStr[i];
-      const symbolValue = this.customBase.symbols.indexOf(symbol);
-
-      if (symbolValue === -1) {
-        throw new TypeError(`Invalid symbol "${symbol}" for this custom base.`);
-      }
-
-      result = result * this.customBase.base + symbolValue;
-    }
-
-    return result;
   }
 
   /**
@@ -80,20 +56,9 @@ class CustomBaseNumber {
    * @returns {string} The string form of the number in the custom base.
    */
   public toString(): string {
-    if (this.value === 0) {
-      return this.customBase.symbols[0];
-    }
+    this.encodedValue ||= BaseConverter.encode(this.value, this.customBase)
 
-    let num = this.value;
-    let result = '';
-
-    do {
-      const remainder = num % this.customBase.base;
-      result = this.customBase.symbols[remainder] + result;
-      num = Math.floor(num / this.customBase.base);
-    } while (num > 0);
-
-    return result;
+    return this.encodedValue;
   }
 
   /**
