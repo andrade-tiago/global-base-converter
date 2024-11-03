@@ -3,7 +3,8 @@
  * Represents a custom numeric base defined by specific symbols.
  * Used to validate and encapsulate the logic for custom numeric systems.
  */
-class CustomBase {
+class CustomBase
+{
   /**
    * Symbols representing each digit in the custom base.
    * Must be unique, single-character strings, matching the specified base length.
@@ -11,6 +12,7 @@ class CustomBase {
    * @type {string[]}
    */
   public readonly symbols: string[];
+  public readonly _symbolsSet: Set<string>;
 
   /**
    * Initializes a new instance of the CustomBase class with a corresponding set of symbols.
@@ -23,18 +25,28 @@ class CustomBase {
    * @throws {TypeError} If any symbol in an array is not a single character.
    * @throws {TypeError} If symbols are not unique.
    */
-  constructor(symbols: string | string[]) {
-    if (symbols.length < 2) {
+  constructor(symbols: string | string[])
+  {
+    if (symbols.length < 2)
+    {
       throw new RangeError('At least two symbols are required for a base.');
     }
-    if (typeof symbols === 'string') {
+    if (typeof symbols === 'string')
+    {
       symbols = [...symbols];
-    } else {
-      if (symbols.some(symbol => symbol.length !== 1)) {
+    }
+    else
+    {
+      if (symbols.some(symbol => symbol.length !== 1))
+      {
         throw new TypeError('Each symbol must be a single character.');
       }
     }
-    if (new Set(symbols).size !== symbols.length) {
+
+    this._symbolsSet = new Set(symbols);
+
+    if (this._symbolsSet.size !== symbols.length)
+    {
       throw new TypeError('Symbols must be unique.');
     }
     this.symbols = symbols;
@@ -45,7 +57,8 @@ class CustomBase {
    * 
    * @returns {number} The base (radix) of the custom numeric system.
    */
-  public get base(): number {
+  public get base(): number
+  {
     return this.symbols.length;
   }
 }
