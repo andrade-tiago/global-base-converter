@@ -1,74 +1,213 @@
-import BaseConverter from './base-converter';
 import CustomBase from './custom-base';
 import { decimalBase } from './defaults';
 
-/**
- * CustomBaseNumber class
- * Represents a number in a customizable numeric base defined by the CustomBase class.
- * Provides methods for converting to and from different bases, as well as string and decimal representations.
- */
-class CustomBaseNumber {
+class CustomBaseNumber
+{
   public readonly customBase: CustomBase;
-  private readonly value: number;
-  private encodedValue?: string;
+  private _number?: number;
+  private _encodedValue?: string;
+  private _bigInt?: bigint;
+  private _canBeConvertedToNumberSafely?: boolean;
 
-  /**
-   * Initializes a new instance of the CustomBaseNumber class.
-   * Allows initialization with:
-   * 1. A custom base string and a CustomBase instance.
-   * 2. A decimal number, with an optional CustomBase instance (defaults to base 10).
-   *
-   * @param {string | number} value - The number in the custom base as a string, or a decimal number.
-   * @param {CustomBase} [customBase] - Optional. An instance of CustomBase defining the numeric base and symbols.
-   *
-   * @throws {RangeError} if a number is negative or non-integer.
-   * @throws {SyntaxError} if customBase is missing for string input.
-   * @throws {TypeError} if the custom base string contains symbols not defined in customBase.
-   */
-  constructor(value: string | number, customBase?: CustomBase) {
-    if (typeof value === 'number') {
-      customBase ||= decimalBase;
-
-      this.customBase = customBase;
-      this.value = value;
-    } else {
-      if (!customBase) {
+  constructor(value: string | number | bigint, customBase?: CustomBase)
+  {
+    if (typeof value === 'string')
+    {
+      if (!customBase)
+      {
         throw new SyntaxError('A CustomBase instance is required for string input.');
       }
-      this.customBase = customBase;
-      this.value = BaseConverter.decode(value, customBase);
-      this.encodedValue = value;
+      CustomBaseNumber.validateStringValue(value, customBase);
+
+      this._encodedValue = value;
+    }
+    else
+    {
+      customBase ||= decimalBase;
+
+      if (typeof value === 'number')
+      {
+        CustomBaseNumber.validateNumberValue(value);
+
+        this._number = value;
+      }
+      else
+      {
+        CustomBaseNumber.validateBigIntValue(value);
+
+        this._bigInt = value;
+      }
+    }
+    this.customBase = customBase;
+  }
+
+  public canBeConvertedToNumberSafely(): boolean
+  {
+    if (this._canBeConvertedToNumberSafely !== undefined)
+    {
+      return this._canBeConvertedToNumberSafely;
+    }
+    if (this._number !== undefined)
+    {
+      return this._canBeConvertedToNumberSafely = true;
+    }
+
+    this._bigInt ??= this.generateBigIntFromEncodedValue();
+
+    return this._canBeConvertedToNumberSafely = (this._bigInt <= BigInt(Number.MAX_SAFE_INTEGER));
+  }
+
+  public convertToBase(targetBase: CustomBase): CustomBaseNumber
+  {
+    if (this.canBeConvertedToNumberSafely())
+    {
+      this._number ??= this.generateNumberFromEncodedValue();
+
+      return new CustomBaseNumber(this._number, targetBase);
+    }
+    else
+    {
+      this._bigInt ??= this.generateBigIntFromEncodedValue();
+
+      return new CustomBaseNumber(this._bigInt, targetBase);
     }
   }
 
-  /**
-   * Converts the CustomBaseNumber instance to its decimal representation.
-   *
-   * @returns {number} The decimal representation of the number.
-   */
-  public toNumber(): number {
-    return this.value;
+  public toBigInt(): bigint
+  {
+    return this._bigInt ??= (this._number !== undefined)
+      ? this.generateBigIntFromNumber()
+      : this.generateBigIntFromEncodedValue()
   }
 
-  /**
-   * Converts the number to its string representation in the custom base.
-   *
-   * @returns {string} The string form of the number in the custom base.
-   */
-  public toString(): string {
-    this.encodedValue ||= BaseConverter.encode(this.value, this.customBase)
-
-    return this.encodedValue;
+  public toString(): string
+  {
+    return this._encodedValue ??= (this._number !== undefined)
+      ? this.generateEncodedValueFromNumber()
+      : this.generateEncodedValueFromBigInt()
   }
 
-  /**
-   * Converts the current CustomBaseNumber to a new instance in a target base.
-   *
-   * @param {CustomBase} targetBase - An instance of CustomBase defining the desired base and symbols.
-   * @returns {CustomBaseNumber} A new CustomBaseNumber instance with the same value in the specified base.
-   */
-  public convertTo(targetBase: CustomBase): CustomBaseNumber {
-    return new CustomBaseNumber(this.value, targetBase);
+  public toNumber(): number
+  {
+    if (this.canBeConvertedToNumberSafely())
+    {
+      return this._number ??= (this._bigInt !== undefined)
+        ? this.generateNumberFromBigInt()
+        : this.generateNumberFromEncodedValue()
+    }
+    throw new Error('This custom base number cannot be converted to a number safely.');
+  }
+
+
+  
+  private generateBigIntFromEncodedValue(): bigint
+  {
+    let decimalValue = BigInt(0);
+    const baseSize = BigInt(this.customBase.base);
+
+    for (const symbol of this._encodedValue!)
+    {
+      const symbolValue = BigInt(this.customBase.symbols.indexOf(symbol));
+
+      decimalValue = (decimalValue * baseSize) + symbolValue;
+    }
+    return decimalValue;
+  }
+
+  private generateBigIntFromNumber(): bigint
+  {
+    return BigInt(this._number!);
+  }
+
+  private generateNumberFromEncodedValue(): number
+  {
+    let decimalValue = 0;
+
+    for (const symbol of this._encodedValue!)
+    {
+      const symbolValue = this.customBase.symbols.indexOf(symbol);
+
+      decimalValue = (decimalValue * this.customBase.base) + symbolValue;
+    }
+    return decimalValue;
+  }
+
+  private generateNumberFromBigInt(): number
+  {
+    return Number(this._bigInt!);
+  }
+
+  private generateEncodedValueFromNumber(): string
+  {
+    if (this._number! === 0) {
+      return this.customBase.symbols[0];
+    }
+
+    let result = '';
+    let value = this._number!;
+
+    do
+    {
+      const remainder = value % this.customBase.base;
+      result = this.customBase.symbols[remainder] + result;
+      value = Math.floor(value / this.customBase.base);
+    }
+    while (value > 0);
+
+    return result;
+  }
+
+  private generateEncodedValueFromBigInt(): string
+  {
+    const ZERO = BigInt(0);
+
+    if (this._bigInt! === ZERO)
+    {
+      return this.customBase.symbols[0];
+    }
+
+    const BASE = BigInt(this.customBase.base);
+    let result = '';
+    let value = this._bigInt!;
+
+    do {
+      const remainder = Number(value % BASE);
+      result = this.customBase.symbols[remainder].concat(result);
+      value = value / BASE;
+    } while (value > ZERO);
+
+    return result;
+  }
+
+  private static validateStringValue(value: string, customBase: CustomBase): void
+  {
+    for (const symbol of value)
+    {
+      if (!customBase._symbolsSet.has(symbol))
+      {
+        throw new Error(`Invalid symbol "${symbol}" for the given custom base.`);
+      }
+    }
+  }
+
+  private static validateNumberValue(value: number): void
+  {
+    if (!Number.isInteger(value) || value < 0)
+    {
+      throw new RangeError('Value must be a non-negative integer.');
+    }
+    if (value > Number.MAX_SAFE_INTEGER)
+    {
+      throw new RangeError('Number value argument exceeds the maximum safe integer.');
+    }
+  }
+
+  private static validateBigIntValue(value: bigint): void
+  {
+    if (value < BigInt(0))
+    {
+      throw new RangeError('Value must be a non-negative integer.');
+    }
   }
 }
 export default CustomBaseNumber;
