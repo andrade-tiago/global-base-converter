@@ -23,7 +23,7 @@ class CustomBaseNumber
     }
     else
     {
-      customBase ||= decimalBase;
+      customBase ??= decimalBase;
 
       if (typeof value === 'number')
       {
@@ -52,7 +52,7 @@ class CustomBaseNumber
       return this._canBeConvertedToNumberSafely = true;
     }
 
-    this._bigInt ??= this.generateBigIntFromEncodedValue();
+    this._bigInt ??= this.calcBigIntFromEncodedValue();
 
     return this._canBeConvertedToNumberSafely = (this._bigInt <= BigInt(Number.MAX_SAFE_INTEGER));
   }
@@ -61,13 +61,13 @@ class CustomBaseNumber
   {
     if (this.canBeConvertedToNumberSafely())
     {
-      this._number ??= this.generateNumberFromEncodedValue();
+      this._number ??= this.calcNumberFromEncodedValue();
 
       return new CustomBaseNumber(this._number, targetBase);
     }
     else
     {
-      this._bigInt ??= this.generateBigIntFromEncodedValue();
+      this._bigInt ??= this.calcBigIntFromEncodedValue();
 
       return new CustomBaseNumber(this._bigInt, targetBase);
     }
@@ -76,15 +76,15 @@ class CustomBaseNumber
   public toBigInt(): bigint
   {
     return this._bigInt ??= (this._number !== undefined)
-      ? this.generateBigIntFromNumber()
-      : this.generateBigIntFromEncodedValue()
+      ? this.calcBigIntFromNumber()
+      : this.calcBigIntFromEncodedValue()
   }
 
   public toString(): string
   {
     return this._encodedValue ??= (this._number !== undefined)
-      ? this.generateEncodedValueFromNumber()
-      : this.generateEncodedValueFromBigInt()
+      ? this.calcEncodedValueFromNumber()
+      : this.calcEncodedValueFromBigInt()
   }
 
   public toNumber(): number
@@ -92,15 +92,15 @@ class CustomBaseNumber
     if (this.canBeConvertedToNumberSafely())
     {
       return this._number ??= (this._bigInt !== undefined)
-        ? this.generateNumberFromBigInt()
-        : this.generateNumberFromEncodedValue()
+        ? this.calcNumberFromBigInt()
+        : this.calcNumberFromEncodedValue()
     }
     throw new Error('This custom base number cannot be converted to a number safely.');
   }
 
 
   
-  private generateBigIntFromEncodedValue(): bigint
+  private calcBigIntFromEncodedValue(): bigint
   {
     let decimalValue = BigInt(0);
     const baseSize = BigInt(this.customBase.base);
@@ -114,12 +114,12 @@ class CustomBaseNumber
     return decimalValue;
   }
 
-  private generateBigIntFromNumber(): bigint
+  private calcBigIntFromNumber(): bigint
   {
     return BigInt(this._number!);
   }
 
-  private generateNumberFromEncodedValue(): number
+  private calcNumberFromEncodedValue(): number
   {
     let decimalValue = 0;
 
@@ -132,12 +132,12 @@ class CustomBaseNumber
     return decimalValue;
   }
 
-  private generateNumberFromBigInt(): number
+  private calcNumberFromBigInt(): number
   {
     return Number(this._bigInt!);
   }
 
-  private generateEncodedValueFromNumber(): string
+  private calcEncodedValueFromNumber(): string
   {
     if (this._number! === 0)
     {
@@ -158,7 +158,7 @@ class CustomBaseNumber
     return result;
   }
 
-  private generateEncodedValueFromBigInt(): string
+  private calcEncodedValueFromBigInt(): string
   {
     const ZERO = BigInt(0);
 
