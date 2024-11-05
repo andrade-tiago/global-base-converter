@@ -107,7 +107,7 @@ class CustomBaseNumber
 
     for (const symbol of this._encodedValue!)
     {
-      const symbolValue = BigInt(this.customBase.symbols.indexOf(symbol));
+      const symbolValue = BigInt(this.customBase.valueOfSymbol(symbol)!);
 
       decimalValue = (decimalValue * baseSize) + symbolValue;
     }
@@ -125,7 +125,7 @@ class CustomBaseNumber
 
     for (const symbol of this._encodedValue!)
     {
-      const symbolValue = this.customBase.symbols.indexOf(symbol);
+      const symbolValue = this.customBase.valueOfSymbol(symbol)!;
 
       decimalValue = (decimalValue * this.customBase.base) + symbolValue;
     }
@@ -139,8 +139,9 @@ class CustomBaseNumber
 
   private generateEncodedValueFromNumber(): string
   {
-    if (this._number! === 0) {
-      return this.customBase.symbols[0];
+    if (this._number! === 0)
+    {
+      return this.customBase.getSymbolOfValue(0)!;
     }
 
     let result = '';
@@ -149,7 +150,7 @@ class CustomBaseNumber
     do
     {
       const remainder = value % this.customBase.base;
-      result = this.customBase.symbols[remainder] + result;
+      result = this.customBase.getSymbolOfValue(remainder)! + result;
       value = Math.floor(value / this.customBase.base);
     }
     while (value > 0);
@@ -163,7 +164,7 @@ class CustomBaseNumber
 
     if (this._bigInt! === ZERO)
     {
-      return this.customBase.symbols[0];
+      return this.customBase.getSymbolOfValue(0)!;
     }
 
     const BASE = BigInt(this.customBase.base);
@@ -172,9 +173,10 @@ class CustomBaseNumber
 
     do {
       const remainder = Number(value % BASE);
-      result = this.customBase.symbols[remainder].concat(result);
+      result = this.customBase.getSymbolOfValue(remainder)!.concat(result);
       value = value / BASE;
-    } while (value > ZERO);
+    }
+    while (value > ZERO);
 
     return result;
   }
@@ -183,7 +185,7 @@ class CustomBaseNumber
   {
     for (const symbol of value)
     {
-      if (!customBase._symbolsSet.has(symbol))
+      if (!customBase.hasSymbol(symbol))
       {
         throw new Error(`Invalid symbol "${symbol}" for the given custom base.`);
       }
