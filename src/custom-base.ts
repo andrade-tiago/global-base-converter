@@ -10,7 +10,11 @@ class CustomBase
       throw new RangeError('At least two symbols are required for a base.');
     }
 
-    if (typeof symbols !== 'string')
+    if (typeof symbols === 'string')
+    {
+      this._symbolsArr = [...symbols];
+    }
+    else
     {
       if (symbols.some(symbol => symbol.length !== 1))
       {
@@ -19,17 +23,16 @@ class CustomBase
       this._symbolsArr = symbols;
     }
 
-    if (new Set(symbols).size !== symbols.length)
-    {
-      throw new TypeError('Symbols must be unique.');
-    }
-
-    this._symbolsArr ??= [...symbols];
     this._symbolsMap = new Map();
     this._symbolsArr.forEach((char, index) =>
     {
       this._symbolsMap.set(char, index);
     });
+
+    if (this._symbolsMap.size !== symbols.length)
+    {
+      throw new TypeError('Symbols must be unique.');
+    }
   }
 
   public get base(): number
