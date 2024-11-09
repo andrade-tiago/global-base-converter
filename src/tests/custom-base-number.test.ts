@@ -137,7 +137,7 @@ describe('CustomBaseNumber', () =>
 
     test('to string', () =>
     {
-      expect(`${num}`).toBe('1F');
+      expect(`${num}`).toBe('10');
     });
   });
 
