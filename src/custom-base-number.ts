@@ -187,20 +187,24 @@ class CustomBaseNumber
     {
       if (!customBase.hasSymbol(symbol))
       {
-        throw new Error(`Invalid symbol "${symbol}" for the given custom base.`);
+        throw new TypeError(`Invalid symbol "${symbol}" for the given custom base.`);
       }
     }
   }
 
   private static validateNumberValue(value: number): void
   {
-    if (!Number.isInteger(value) || value < 0)
+    if (!Number.isInteger(value))
     {
-      throw new RangeError('Value must be a non-negative integer.');
+      throw new TypeError('Number input must be an integer value.');
+    }
+    if (value < 0)
+    {
+      throw new RangeError('Number input must be greater than zero.');
     }
     if (value > Number.MAX_SAFE_INTEGER)
     {
-      throw new RangeError('Number value argument exceeds the maximum safe integer.');
+      throw new RangeError('Number input exceeds the maximum safe integer.');
     }
   }
 
@@ -208,7 +212,7 @@ class CustomBaseNumber
   {
     if (value < BigInt(0))
     {
-      throw new RangeError('Value must be a non-negative integer.');
+      throw new RangeError('BigInt input must be greater than zero.');
     }
   }
 }
