@@ -10,7 +10,6 @@ import CustomBase from '../custom-base';
  * - Uppercase letters: A-Z (excluding O and I)
  * - Lowercase letters: a-z (excluding l)
  * 
- * @type {CustomBase}
  * @constant
  */
 const base58 = new CustomBase([

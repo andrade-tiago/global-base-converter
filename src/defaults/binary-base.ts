@@ -9,7 +9,6 @@ import CustomBase from '../custom-base';
  * - 0: Represents the off state.
  * - 1: Represents the on state.
  * 
- * @type {CustomBase}
  * @constant
  */
 const binaryBase = new CustomBase([

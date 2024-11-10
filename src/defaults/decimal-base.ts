@@ -3,7 +3,6 @@ import CustomBase from '../custom-base';
 /**
  * Instance of the decimal base, using the symbols 0 through 9.
  *
- * @type {CustomBase}
  * @constant
  */
 const decimalBase = new CustomBase([

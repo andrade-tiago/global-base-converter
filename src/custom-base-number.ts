@@ -1,6 +1,10 @@
 import CustomBase from './custom-base';
 import { decimalBase } from './defaults';
 
+/**
+ * Represents a number in a custom numeric base defined by the CustomBase class.
+ * Supports conversion to/from custom base representation, along with conversions to other formats.
+ */
 class CustomBaseNumber
 {
   public readonly customBase: CustomBase;
@@ -12,6 +16,18 @@ class CustomBaseNumber
   constructor(value: string, customBase: CustomBase);
   constructor(value: number | bigint, customBase?: CustomBase);
 
+  /**
+   * Initializes a new instance of the CustomBaseNumber class.
+   * Supports either:
+   * - A custom base string with a CustomBase instance.
+   * - A decimal number or bigint with an optional CustomBase instance.
+   *
+   * @param {string|number|bigint} value - The number, either as a string in a custom base, a decimal number, or bigint.
+   * @param {CustomBase} [customBase] - Optional. CustomBase instance; required for string input.
+   *
+   * @throws {SyntaxError} If customBase is missing when value is a string.
+   * @throws {TypeError|RangeError} For invalid number, bigint, or string format.
+   */
   constructor(value: string | number | bigint, customBase?: CustomBase)
   {
     if (typeof value === 'string')
@@ -44,6 +60,11 @@ class CustomBaseNumber
     this.customBase = customBase;
   }
 
+  /**
+   * Checks if the number can be converted to a safe JavaScript number.
+   * 
+   * @returns {boolean} True if safe to convert to a number; otherwise, false.
+   */
   public canBeConvertedToNumberSafely(): boolean
   {
     if (this._canBeConvertedToNumberSafely !== undefined)
@@ -60,6 +81,12 @@ class CustomBaseNumber
     return this._canBeConvertedToNumberSafely = (this._bigInt <= BigInt(Number.MAX_SAFE_INTEGER));
   }
 
+  /**
+   * Converts the current CustomBaseNumber to a specified target base.
+   * 
+   * @param {CustomBase} targetBase - The target CustomBase for conversion.
+   * @returns {CustomBaseNumber} A new CustomBaseNumber in the target base.
+   */
   public convertToBase(targetBase: CustomBase): CustomBaseNumber
   {
     if (this.canBeConvertedToNumberSafely())
@@ -76,6 +103,11 @@ class CustomBaseNumber
     }
   }
 
+  /**
+   * Converts the current value to a bigint.
+   * 
+   * @returns {bigint} The numeric value as a bigint.
+   */
   public toBigInt(): bigint
   {
     return this._bigInt ??= (this._number !== undefined)
@@ -83,6 +115,11 @@ class CustomBaseNumber
       : this.calcBigIntFromEncodedValue()
   }
 
+  /**
+   * Converts the current value to a custom base string.
+   * 
+   * @returns {string} The string representation in the custom base.
+   */
   public toString(): string
   {
     return this._encodedValue ??= (this._number !== undefined)
@@ -90,6 +127,12 @@ class CustomBaseNumber
       : this.calcEncodedValueFromBigInt()
   }
 
+  /**
+   * Converts the current value to a number if safe.
+   * 
+   * @returns {number} The numeric value as a number.
+   * @throws {Error} If the number cannot be safely converted.
+   */
   public toNumber(): number
   {
     if (this.canBeConvertedToNumberSafely())
@@ -183,6 +226,8 @@ class CustomBaseNumber
 
     return result;
   }
+
+
 
   private static validateStringValue(value: string, customBase: CustomBase): void
   {

@@ -4,7 +4,6 @@ import CustomBase from '../custom-base';
  * Instance of the hexadecimal base, using the symbols 0 through 9 and A through F.
  * This base is commonly used in computing and digital electronics.
  *
- * @type {CustomBase}
  * @constant
  */
 const hexadecimalBase = new CustomBase([

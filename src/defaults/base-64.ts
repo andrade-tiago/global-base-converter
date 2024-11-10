@@ -11,7 +11,6 @@ import CustomBase from '../custom-base';
  * - Digits: 0-9
  * - Additional characters: + and /
  * 
- * @type {CustomBase}
  * @constant
  */
 const base64 = new CustomBase([
