@@ -9,6 +9,9 @@ class CustomBaseNumber
   private _bigInt?: bigint;
   private _canBeConvertedToNumberSafely?: boolean;
 
+  constructor(value: string, customBase: CustomBase);
+  constructor(value: number | bigint, customBase?: CustomBase);
+
   constructor(value: string | number | bigint, customBase?: CustomBase)
   {
     if (typeof value === 'string')
