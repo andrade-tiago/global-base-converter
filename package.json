@@ -1,20 +1,31 @@
 {
-  "name": "@andrade-tiago/base-converter",
+  "name": "@andrade-tiago/global-base-converter",
   "version": "1.0.0",
-  "description": "Convert a number from any base to any base (arbitraries)",
-  "main": "index.js",
+  "description": "A powerful library to convert a number from any to any custom bases.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build:esm && npm run build:cjs && npm run build:types",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:types": "tsc --project tsconfig.types.json",
+    "test": "jest"
   },
   "keywords": [
     "number",
     "base",
     "radix",
-    "converter"
+    "converter",
+    "bigint",
+    "number"
   ],
   "author": "Tiago Andrade",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.6.3"
   }
 }

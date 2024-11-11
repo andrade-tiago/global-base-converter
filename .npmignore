@@ -1,0 +1,9 @@
+node_modules/
+.git/
+.vscode/
+src/
+.github/
+
+README.pt.md
+tsconfig.*
+jest.config.js
