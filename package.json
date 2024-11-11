@@ -1,7 +1,7 @@
 {
-  "name": "@andrade-tiago/base-converter",
+  "name": "@andrade-tiago/global-base-converter",
   "version": "1.0.0",
-  "description": "Convert a number from any to any bases (arbitraries)",
+  "description": "A powerful library to convert a number from any to any custom bases.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
