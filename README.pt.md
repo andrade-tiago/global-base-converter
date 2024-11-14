@@ -65,7 +65,7 @@ Representa um valor numa base customizada.
 | --- | --- | --- |
 | `constructor(value: string, customBase: CustomBase)` | Gera uma instância de `CustomBaseNumber` | `CustomBaseNumber` |
 | `constructor(value: number \| bigint, customBase?: CustomBase)` | Gera uma instância de `CustomBaseNumber` | `CustomBaseNumber` |
-| customBase | Obtém a instância `CustomBase` do número | `CustomBase` |
+| `customBase` | Obtém a instância `CustomBase` do número | `CustomBase` |
 | `canBeConvertedToNumberSafely()` | Verifica se o valor pode ser convertido para `number` | `boolean` |
 | `convertToBase(targetBase: CustomBase)` | Converte o valor para a nova base especificada | `CustomBaseNumber` |
 | `toBigInt()` | Converte o valor para `bigint` | `bigint` |
