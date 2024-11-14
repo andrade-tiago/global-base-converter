@@ -1,6 +1,6 @@
 {
   "name": "@andrade-tiago/global-base-converter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A powerful library to convert a number from any to any custom bases.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
