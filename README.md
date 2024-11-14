@@ -13,9 +13,17 @@ This library is for more complex cases requiring greater flexibility and customi
 - **Inter-base Conversion**: Easily convert numbers between different custom bases;
 - **Safe Conversions**: Verifies if the conversion to `number` is safe (for large values).
 
+## Installation
+
+```bash
+npm i @andrade-tiago/global-base-converter
+```
+
 ## Usage Examples
 
 ```ts
+import { CustomBase, CustomBaseNumber } from '@andrade-tiago/global-base-converter';
+
 const binaryBase = new CustomBase(['0', '1']);
 const hexBase = new CustomBase("0123456789ABCDEF");
 

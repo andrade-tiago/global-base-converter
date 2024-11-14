@@ -14,9 +14,17 @@ Essa biblioteca é para casos mais complexos e que exigem maior flexibilidade e 
 - **Conversão Inter-base**: Converta números facilmente entre diferentes bases personalizadas;
 - **Conversões Seguras**: Verifica se a conversão para `number` é segura (para valores grandes).
 
+## Instalação
+
+```bash
+npm i @andrade-tiago/global-base-converter
+```
+
 ## Exemplos de uso
 
 ```ts
+import { CustomBase, CustomBaseNumber } from '@andrade-tiago/global-base-converter';
+
 const binaryBase = new CustomBase(['0', '1']);
 const hexBase = new CustomBase("0123456789ABCDEF");
 
